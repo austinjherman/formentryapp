@@ -37,7 +37,7 @@ class FormEntryStore extends Request
         ];
     }
 
-    public function validateOrRespond() {
+    public function validateRequestOrFail() {
         $validator = Validator::make($this->all(), $this->rules(), $this->messages());
         if ($validator->fails()) {
             throw new HttpResponseException(response()->json(['errors' => $validator->errors()->all()], 422));

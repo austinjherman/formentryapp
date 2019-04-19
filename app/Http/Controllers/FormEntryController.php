@@ -17,7 +17,7 @@ class FormEntryController extends Controller
      */
     public function create(FormEntryStore $request) {
 
-        $request->validateOrRespond();
+        $request->validateRequestOrFail();
         return response()->json(['data' => 'validation passed']);
 
         // $formEntry = new FormEntry;
