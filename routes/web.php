@@ -17,4 +17,7 @@ $router->get('/', function () use ($router) {
 
 $router->post('/form-entry', [
     'uses' => 'FormEntryController@create'
+    ]);
+$router->get('/form-entry/{id}', [
+    'uses' => 'FormEntryController@read'
 ]);
