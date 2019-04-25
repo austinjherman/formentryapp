@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\FormEntry;
 use Illuminate\Http\Request;
-use App\Http\Request\FormEntryStore;
 use Illuminate\Support\Facades\Validator;
 
 class FormEntryController extends Controller
@@ -15,44 +14,81 @@ class FormEntryController extends Controller
      *
      * @return void
      */
-    public function create(FormEntryStore $request) {
+    public function create(Request $request) {
 
-        $request->validateRequestOrFail();
-        return response()->json(['data' => 'validation passed']);
+        // validate incoming request
+        $v = Validator::make($request->all(), [
+            'first_name' => 'required|string|max:50',
+            'last_name' => 'required|string|max:50',
+            'phone' => 'required|max:25',
+            'email' => 'required|email',
+        ]);
+        if($v->fails()) {
+            return response()->json([
+                'success' => false,
+                'reason' => 'Form validation failed',
+                'errors' => $v->errors()
+            ], 400);
+        }
 
-        // $formEntry = new FormEntry;
-        // $formEntry->first_name = $request->input('first_name');
-        // $formEntry->last_name = $request->input('last_name');
-        // $formEntry->email = $request->input('email');
-        // $formEntry->phone = $request->input('phone');
-        // $formEntry->save();
+        // store if request is valid
+        $formEntry = new FormEntry;
+        $formEntry->first_name = $request->input('first_name');
+        $formEntry->last_name = $request->input('last_name');
+        $formEntry->email = $request->input('email');
+        $formEntry->phone = $request->input('phone');
+        $formEntry->save();
+
+        // return created object
+        return response()->json([
+            'success' => true,
+            'data' => $formEntry
+        ], 200);
 
     }
 
     /**
-     * Create a new controller instance.
+     * Get a form entry from storage.
      *
      * @return void
      */
     public function read($id) {
-        return User::findOrFail($id);
+
+        $formEntry = FormEntry::find($id);
+
+        if($formEntry) {
+            return response()->json([
+                'success' => true,
+                'data' => $formEntry
+            ], 200);
+        }
+
+        else {
+            return response()->json([
+                'success' => false,
+                'reason' => 'Not found',
+                'data' => $formEntry
+            ], 404);
+        }
+
+        
     }
 
     /**
-     * Create a new controller instance.
+     * Update an existing form entry.
      *
      * @return void
      */
-    public function update() {
+    public function update($id) {
         //
     }
 
     /**
-     * Create a new controller instance.
+     * Delete an existing form entry.
      *
      * @return void
      */
-    public function delete() {
+    public function delete($id) {
         //
     }
 
