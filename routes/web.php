@@ -15,9 +15,28 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->post('/form-entry', [
-    'uses' => 'FormEntryController@create'
-    ]);
-$router->get('/form-entry/{id}', [
-    'uses' => 'FormEntryController@read'
+$router->post('auth/login', [
+    'uses' => 'AuthController@authenticate'
 ]);
+
+$router->group(['prefix' => 'api/v1'], function () use ($router) {
+
+    $router->post('/form-entry', [
+        'uses' => 'FormEntryController@create'
+        ]);
+
+    $router->get('/form-entry/{id}', [
+        'uses' => 'FormEntryController@read'
+    ]);
+
+});
+
+$router->group(
+    ['middleware' => 'jwt.auth'], 
+    function() use ($router) {
+        $router->get('users', function() {
+            $users = \App\User::all();
+            return response()->json($users);
+        });
+    }
+);
