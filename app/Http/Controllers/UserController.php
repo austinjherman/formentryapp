@@ -7,11 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class FormEntryController extends Controller
+class UserController extends Controller
 {
 
     /**
-     * Store a new form entry.
+     * Store a new.
      *
      * @return void
      */
@@ -49,7 +49,7 @@ class FormEntryController extends Controller
     }
 
     /**
-     * Get a form entry from storage.
+     * Get a user from storage.
      *
      * @return void
      */
@@ -76,7 +76,7 @@ class FormEntryController extends Controller
     }
 
     /**
-     * Update an existing form entry.
+     * Update an existing user.
      *
      * @return void
      */
@@ -85,7 +85,7 @@ class FormEntryController extends Controller
     }
 
     /**
-     * Delete an existing form entry.
+     * Delete an existing user.
      *
      * @return void
      */
