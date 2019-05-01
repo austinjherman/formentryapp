@@ -22,6 +22,7 @@ class FormEntryController extends Controller
             'last_name' => 'required|string|max:50',
             'phone' => 'required|max:25',
             'email' => 'required|email',
+            'additional_fields' => 'json',
         ]);
         if($v->fails()) {
             return response()->json([
@@ -37,6 +38,9 @@ class FormEntryController extends Controller
         $formEntry->last_name = $request->input('last_name');
         $formEntry->email = $request->input('email');
         $formEntry->phone = $request->input('phone');
+        if($af = $request->input('additional_fields')) {
+            $formEntry->additional_fields = $af;
+        }
         $formEntry->save();
 
         // return created object
