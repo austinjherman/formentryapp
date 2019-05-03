@@ -21,3 +21,16 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
         'password' => Hash::make('test'),
     ];
 });
+
+$factory->define(App\FormEntry::class, function (Faker\Generator $faker) {
+    return [
+        'first_name'     => $faker->firstName,
+        'last_name'     => $faker->lastName,
+        'email'    => $faker->email,
+        'phone' => $faker->phoneNumber,
+        'additional_fields' => json_encode([
+            'program_code' => $faker->text,
+            'date' => $faker->date
+        ])
+    ];
+});
