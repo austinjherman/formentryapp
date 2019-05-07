@@ -23,7 +23,7 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
 
     $router->post('/form-entry', [
         'uses' => 'FormEntryController@create'
-        ]);
+    ]);
 
     $router->get('/form-entry/{id}', [
         'uses' => 'FormEntryController@read'
@@ -31,12 +31,8 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
 
 });
 
-$router->group(
-    ['middleware' => 'jwt.auth'], 
-    function() use ($router) {
-        $router->get('users', function() {
-            $users = \App\User::all();
-            return response()->json($users);
-        });
-    }
-);
+$router->group(['prefix' => 'api/v1', 'middleware' => 'jwt.auth'], function () use ($router) {
+    $router->get('/form-entries', [
+        'uses' => 'FormEntryController@index'
+    ]);
+});
