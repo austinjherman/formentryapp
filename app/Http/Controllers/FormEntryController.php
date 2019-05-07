@@ -9,6 +9,14 @@ use Illuminate\Support\Facades\Validator;
 class FormEntryController extends Controller
 {
 
+    public function index(Request $request) {
+        $formEntries = FormEntry::all();
+        return response()->json([
+            'success' => true,
+            'data' => $formEntries
+        ], 200);
+    }
+
     /**
      * Store a new form entry.
      *
