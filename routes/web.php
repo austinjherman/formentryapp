@@ -16,7 +16,10 @@ $router->get('/', function () use ($router) {
 });
 
 $router->post('auth/login', [
-    'uses' => 'AuthController@authenticate'
+    'uses' => 'AuthController@login'
+]);
+$router->post('auth/validate-token', [
+    'uses' => 'AuthController@validateToken'
 ]);
 
 $router->group(['prefix' => 'api/v1'], function () use ($router) {

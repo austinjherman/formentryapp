@@ -61,7 +61,7 @@ class AuthController extends BaseController
      * @param  \App\User   $user 
      * @return mixed
      */
-    public function authenticate(User $user) {
+    public function login(User $user) {
 
         $this->validate($this->request, [
             'email'     => 'required|email',
@@ -92,6 +92,39 @@ class AuthController extends BaseController
             'error' => 'Email or password is wrong.'
         ], 400);
         
+    }
+
+    public function validateToken() {
+        $token = $request->bearerToken();
+        
+        if(!$token) {
+            // Unauthorized response if token not there
+            return response()->json([
+                'error' => 'You don\'t have a token.'
+            ], 401);
+        }
+        try {
+            $credentials = JWT::decode($token, env('JWT_SECRET'), ['HS256']);
+        } catch(ExpiredException $e) {
+            return response()->json([
+                'error' => 'Your token is expired.'
+            ], 400);
+        } catch(Exception $e) {
+            return response()->json([
+                'error' => 'Check yourself before you wreck your token.'
+            ], 400);
+        }
+
+        if($credentials) {
+            return response()->json([
+                'success' => true
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'error' => 'We\'re experiencing some difficulites. Please try again later.'
+        ], 200);
     }
 
 }
