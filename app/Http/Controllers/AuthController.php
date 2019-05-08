@@ -95,7 +95,7 @@ class AuthController extends BaseController
     }
 
     public function validateToken() {
-        $token = $request->bearerToken();
+        $token = $this->request->bearerToken();
         
         if(!$token) {
             // Unauthorized response if token not there
@@ -109,7 +109,7 @@ class AuthController extends BaseController
             return response()->json([
                 'error' => 'Your token is expired.'
             ], 400);
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             return response()->json([
                 'error' => 'Check yourself before you wreck your token.'
             ], 400);
