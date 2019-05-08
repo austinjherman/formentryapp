@@ -101,7 +101,7 @@ class AuthController extends BaseController
             // Unauthorized response if token not there
             return response()->json([
                 'error' => 'You don\'t have a token.'
-            ], 401);
+            ], 400);
         }
         try {
             $credentials = JWT::decode($token, env('JWT_SECRET'), ['HS256']);
@@ -124,7 +124,7 @@ class AuthController extends BaseController
         return response()->json([
             'success' => false,
             'error' => 'We\'re experiencing some difficulites. Please try again later.'
-        ], 200);
+        ], 500);
     }
 
 }
