@@ -35,7 +35,13 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
 });
 
 $router->group(['prefix' => 'api/v1', 'middleware' => 'jwt.auth'], function () use ($router) {
+
+    $router->get('/user', [
+        'uses' => 'UserController@read'
+    ]);
+
     $router->get('/form-entries', [
         'uses' => 'FormEntryController@index'
     ]);
+
 });

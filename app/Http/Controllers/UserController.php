@@ -53,9 +53,10 @@ class UserController extends Controller
      *
      * @return void
      */
-    public function read($id) {
+    public function read(Request $request) {
 
-        $user = User::find($id);
+        $authedUser = $request->auth;
+        $user = User::find($authedUser->id);
 
         if($user) {
             return response()->json([
@@ -67,8 +68,8 @@ class UserController extends Controller
         else {
             return response()->json([
                 'success' => false,
-                'reason' => 'Not found',
-                'data' => $user
+                'reason' => 'Not found.',
+                'data' => null
             ], 404);
         }
 
