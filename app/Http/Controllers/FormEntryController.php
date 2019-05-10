@@ -10,11 +10,30 @@ class FormEntryController extends Controller
 {
 
     public function index(Request $request) {
-        $formEntries = FormEntry::all();
+
+        $totalEntries = FormEntry::count();
+
+        $page = (int) $request->input('page');
+        if(!$page) {
+            $page = 1;
+        }
+
+        $perPage = (int) $request->input('per-page');
+        if(!$perPage || $perPage > 100) {
+            $perPage = 100;
+        }
+
+        $formEntries = FormEntry::all()->sortByDesc('created_at')->forPage($page, $perPage);
+        $formEntries = $formEntries->values()->all();
+
         return response()->json([
             'success' => true,
+            'total_entries' => $totalEntries,
+            'per_page' => $perPage,
+            'page' => $page,
             'data' => $formEntries
         ], 200);
+
     }
 
     /**

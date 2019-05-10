@@ -20,7 +20,7 @@ class FormEntry extends Model
      * @var array
      */
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'phone',
+        'first_name', 'last_name', 'email', 'phone'
     ];
 
     /**

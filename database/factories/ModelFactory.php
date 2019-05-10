@@ -31,6 +31,7 @@ $factory->define(App\FormEntry::class, function (Faker\Generator $faker) {
         'additional_fields' => json_encode([
             'program_code' => $faker->text,
             'date' => $faker->date
-        ])
+        ]),
+        'created_at' => $faker->dateTimeBetween('-6 months', '+6 months')
     ];
 });
