@@ -19,7 +19,8 @@ class CreateFormEntriesTable extends Migration
             $table->string('last_name');
             $table->string('email');
             $table->string('phone');
-            $table->longtext('additional_fields');
+            $table->json('additional_fields');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

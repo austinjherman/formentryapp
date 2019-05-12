@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\FormEntry;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class FormEntryController extends Controller
@@ -11,19 +12,74 @@ class FormEntryController extends Controller
 
     public function index(Request $request) {
 
-        $totalEntries = FormEntry::count();
-
+        // pagination variables
         $page = (int) $request->input('page');
         if(!$page) {
             $page = 1;
         }
-
         $perPage = (int) $request->input('per-page');
         if(!$perPage || $perPage > 100) {
             $perPage = 100;
         }
 
-        $formEntries = FormEntry::all()->sortByDesc('created_at')->forPage($page, $perPage);
+        // initial query
+        $formEntries = DB::table(with(new FormEntry)->getTable());
+        // $formEntries->where(function($query) {
+
+        //     $query->where(function($query) {
+        //         $query->where('additional_fields->vendor', '=', 'maci');
+        //         $query->orWhere('additional_fields->vendor', '=', 'levi');
+        //     });
+
+        //     $query->where(function($query) {
+        //         $query->where('additional_fields->program_code', '=', 'HS-MOBS');
+        //     });
+
+        // });
+
+        //additional filters
+        $addFilters = $request->input('add-filters');
+        if($addFilters) {
+            $addFilters = explode(' ', $request->input('add-filters'));
+            if(count($addFilters) > 0) {
+                //var_dump($addFilters);
+                foreach($addFilters as $af) {
+                    $af = explode(':', $af);
+                    if(count($af) === 2) {
+                        $values = explode('.', $af[1]);
+                        $valueCount= count($values);
+                        if($valueCount > 1) {
+                            //var_dump($values);
+                            $formEntries->where(function($query) use($af, $values, $valueCount) {
+                                for($i=0; $i < $valueCount; $i++) {
+                                    if($i === 0) {
+                                        //var_dump("where additional_fields->$af[0] = $values[$i]");
+                                        $query->where("additional_fields->$af[0]", '=', $values[$i]);
+                                    }
+                                    else {
+                                        //var_dump("or where additional_fields->$af[0] = $values[$i]");
+                                        $query->orWhere("additional_fields->$af[0]", '=', $values[$i]);
+                                    }
+                                }
+                            });
+                        }
+                        elseif($valueCount === 1 ) {
+                            //var_dump("where additional_fields->$af[0] = $af[1]");
+                            $formEntries->where(function($query) use($af) {
+                                $query->where("additional_fields->$af[0]", '=', $af[1]);
+                            });
+                        }
+                    }
+                    
+                }
+            }
+        }
+
+        // var_dump($formEntries->toSql());
+        //dd($formEntries->getBindings());
+        $formEntries = $formEntries->get();
+        $totalEntries = count($formEntries);
+        $formEntries = $formEntries->sortByDesc('created_at')->forPage($page, $perPage);
         $formEntries = $formEntries->values()->all();
 
         return response()->json([
@@ -121,6 +177,41 @@ class FormEntryController extends Controller
      */
     public function delete($id) {
         //
+    }
+
+    public function filters() {
+
+        $entries = FormEntry::all();
+        $filters = [];
+        $return = [];
+
+        foreach($entries as $entry) {
+            $additional_fields = json_decode($entry->additional_fields);
+            foreach($additional_fields as $key => $value) {
+                if(!isset($filters[$key])) {
+                    $filters[$key][] = $value;
+                }
+                else {
+                    if(!in_array($value, $filters[$key])) {
+                        $filters[$key][] = $value;
+                    }
+                }
+            }
+        }
+
+        foreach($filters as $key => $value) {
+            $return[] = [
+                'name' => $key,
+                'values' => $value
+            ];
+        }
+
+
+        return response()->json([
+            'success' => true,
+            'data' => $return
+        ], 200);
+
     }
 
 }

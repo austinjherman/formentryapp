@@ -13,6 +13,6 @@ class FormEntriesTableSeeder extends Seeder
     public function run()
     {
         // create 10 users using the user factory
-        factory(App\FormEntry::class, 2000)->create();
+        factory(App\FormEntry::class, 2045)->create();
     }
 }

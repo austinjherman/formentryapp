@@ -44,4 +44,8 @@ $router->group(['prefix' => 'api/v1', 'middleware' => 'jwt.auth'], function () u
         'uses' => 'FormEntryController@index'
     ]);
 
+    $router->get('/form-entries/filters', [
+        'uses' => 'FormEntryController@filters'
+    ]);
+
 });
