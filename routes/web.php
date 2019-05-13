@@ -48,4 +48,20 @@ $router->group(['prefix' => 'api/v1', 'middleware' => 'jwt.auth'], function () u
         'uses' => 'FormEntryController@filters'
     ]);
 
+    $router->get('/filters', [
+        'uses' => 'FilterController@index'
+    ]);
+
+    $router->get('/filter-groups', [
+        'uses' => 'FilterGroupController@index'
+    ]);
+
+    $router->get('/filter-groups/{id}', [
+        'uses' => 'FilterGroupController@read'
+    ]);
+
+    $router->get('/filter-groups/create', [
+        'uses' => 'FilterGroupController@create'
+    ]);
+
 });

@@ -23,48 +23,52 @@ class FormEntryController extends Controller
         }
 
         // initial query
-        $formEntries = DB::table(with(new FormEntry)->getTable());
-        // $formEntries->where(function($query) {
-
-        //     $query->where(function($query) {
-        //         $query->where('additional_fields->vendor', '=', 'maci');
-        //         $query->orWhere('additional_fields->vendor', '=', 'levi');
-        //     });
-
-        //     $query->where(function($query) {
-        //         $query->where('additional_fields->program_code', '=', 'HS-MOBS');
-        //     });
-
-        // });
+        $formEntries = DB::table(
+            with(new FormEntry)->getTable()
+        )->orderBy('created_at', 'desc');
 
         //additional filters
         $addFilters = $request->input('add-filters');
         if($addFilters) {
+
+            // + symbol is converted to a space in URL params
+            // first we will split by + to get the different filter
+            // groups
             $addFilters = explode(' ', $request->input('add-filters'));
+
             if(count($addFilters) > 0) {
-                //var_dump($addFilters);
                 foreach($addFilters as $af) {
+
+                    // for each filter group, we will explode by
+                    // : to get <filtergroup>:<filters>
                     $af = explode(':', $af);
+
                     if(count($af) === 2) {
+
+                        // individual filters are separated by .
                         $values = explode('.', $af[1]);
                         $valueCount= count($values);
+
+                        // create where groups for both cases
                         if($valueCount > 1) {
-                            //var_dump($values);
+    
                             $formEntries->where(function($query) use($af, $values, $valueCount) {
+
+                                // if there's more than one filter, the first should be a where
+                                // followed by orWheres
                                 for($i=0; $i < $valueCount; $i++) {
                                     if($i === 0) {
-                                        //var_dump("where additional_fields->$af[0] = $values[$i]");
                                         $query->where("additional_fields->$af[0]", '=', $values[$i]);
                                     }
                                     else {
-                                        //var_dump("or where additional_fields->$af[0] = $values[$i]");
                                         $query->orWhere("additional_fields->$af[0]", '=', $values[$i]);
                                     }
                                 }
                             });
                         }
+
+                        // single where for one single filter
                         elseif($valueCount === 1 ) {
-                            //var_dump("where additional_fields->$af[0] = $af[1]");
                             $formEntries->where(function($query) use($af) {
                                 $query->where("additional_fields->$af[0]", '=', $af[1]);
                             });
@@ -75,11 +79,9 @@ class FormEntryController extends Controller
             }
         }
 
-        // var_dump($formEntries->toSql());
-        //dd($formEntries->getBindings());
         $formEntries = $formEntries->get();
         $totalEntries = count($formEntries);
-        $formEntries = $formEntries->sortByDesc('created_at')->forPage($page, $perPage);
+        $formEntries = $formEntries->forPage($page, $perPage);
         $formEntries = $formEntries->values()->all();
 
         return response()->json([
@@ -182,6 +184,7 @@ class FormEntryController extends Controller
     public function filters() {
 
         $entries = FormEntry::all();
+
         $filters = [];
         $return = [];
 
@@ -206,11 +209,11 @@ class FormEntryController extends Controller
             ];
         }
 
-
         return response()->json([
             'success' => true,
             'data' => $return
         ], 200);
+
 
     }
 
