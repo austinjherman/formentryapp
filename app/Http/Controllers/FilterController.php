@@ -42,7 +42,7 @@ class FilterController extends Controller
 
         // store if request is valid
         $filter = new Filter();
-        $filter->name = $request->input('name');
+        $filter->value = $request->input('value');
         $filter->filter_group_id = $request->input('filter_group_id');
         $filter->save();
 
@@ -68,8 +68,30 @@ class FilterController extends Controller
      *
      * @return void
      */
-    public function update($id) {
-        //
+    public function update(Request $request, $id) {
+
+        // validate incoming request
+        $v = Validator::make($request->all(), [
+            'value' => 'required'
+        ]);
+        if($v->fails()) {
+            return response()->json([
+                'success' => false,
+                'reason' => 'Form validation failed',
+                'errors' => $v->errors()
+            ], 400);
+        }
+
+        $filter = Filter::find($id);
+        $filter->value = $request->input('value');
+        $filter->save();
+
+        // return created object
+        return response()->json([
+            'success' => true,
+            'data' => $filter
+        ], 200);
+
     }
 
     /**
@@ -78,7 +100,17 @@ class FilterController extends Controller
      * @return void
      */
     public function delete($id) {
-        //
+        
+        $filter = Filter::find($id);
+        $filter->delete();
+        
+        // return created object
+        return response()->json([
+            'success' => true,
+            'message' => 'Filter deleted',
+            'data' => null
+        ], 200);
+
     }
 
 }

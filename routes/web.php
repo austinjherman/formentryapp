@@ -52,16 +52,24 @@ $router->group(['prefix' => 'api/v1', 'middleware' => 'jwt.auth'], function () u
         'uses' => 'FilterController@index'
     ]);
 
+    $router->post('/filters', [
+        'uses' => 'FilterController@create'
+    ]);
+
+    $router->put('/filters/{id}', [
+        'uses' => 'FilterController@update'
+    ]);
+
+    $router->delete('/filters/{id}', [
+        'uses' => 'FilterController@delete'
+    ]);
+
     $router->get('/filter-groups', [
         'uses' => 'FilterGroupController@index'
     ]);
 
     $router->get('/filter-groups/{id}', [
         'uses' => 'FilterGroupController@read'
-    ]);
-
-    $router->get('/filter-groups/create', [
-        'uses' => 'FilterGroupController@create'
     ]);
 
 });
